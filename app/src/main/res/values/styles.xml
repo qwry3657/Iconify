@@ -169,7 +169,7 @@
         <item name="colorControlHighlight">@color/rippleAccent</item>
     </style>
 
-    <style name="BottomNavigationView" parent="Base.Widget.Material3.BottomNavigationView">
+    <style name="BottomNavigationView" parent="Widget.Material3.BottomNavigationView">
         <item name="android:theme">@style/Theme.Iconify</item>
         <item name="android:background">@drawable/bottom_navbar_bg</item>
         <item name="itemRippleColor">@color/rippleAccent</item>
