@@ -40,7 +40,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Iconify"
         tools:replace="android:allowBackup"
-        tools:targetApi="tiramisu">
+        tools:targetApi="31"
+        android:requestLegacyExternalStorage="true">
+
         <activity
             android:name=".ui.activities.Switch"
             android:exported="false" />
