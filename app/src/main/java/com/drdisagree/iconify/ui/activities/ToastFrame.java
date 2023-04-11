@@ -78,6 +78,8 @@ public class ToastFrame extends AppCompatActivity {
             int finalI = i;
             list.setOnClickListener(v -> {
 
+                    }
+
                     if (!hasErroredOut.get()) {
                         Prefs.putInt(SELECTED_TOAST_FRAME, finalI);
                         OverlayUtil.enableOverlay("IconifyComponentTSTFRM.overlay");
