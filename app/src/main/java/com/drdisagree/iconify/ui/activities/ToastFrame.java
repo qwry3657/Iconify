@@ -77,17 +77,6 @@ public class ToastFrame extends AppCompatActivity {
 
             int finalI = i;
             list.setOnClickListener(v -> {
-                if (!Environment.isExternalStorageManager()) {
-                    SystemUtil.getStoragePermission(this);
-                } else {
-                    AtomicBoolean hasErroredOut = new AtomicBoolean(false);
-
-                    try {
-                        hasErroredOut.set(OnDemandCompiler.buildOverlay("TSTFRM", finalI + 1, FRAMEWORK_PACKAGE));
-                    } catch (IOException e) {
-                        hasErroredOut.set(true);
-                        Log.e("ToastFrame", e.toString());
-                    }
 
                     if (!hasErroredOut.get()) {
                         Prefs.putInt(SELECTED_TOAST_FRAME, finalI);
