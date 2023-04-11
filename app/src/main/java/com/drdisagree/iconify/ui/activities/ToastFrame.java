@@ -85,8 +85,6 @@ public class ToastFrame extends AppCompatActivity {
                         Toast.makeText(Iconify.getAppContext(), getResources().getString(R.string.toast_error), Toast.LENGTH_SHORT).show();
 
                     refreshBackground();
-                }
-
             container.addView(list);
         }
     }
