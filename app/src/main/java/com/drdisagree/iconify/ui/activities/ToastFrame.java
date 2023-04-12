@@ -58,8 +58,6 @@ public class ToastFrame extends AppCompatActivity {
         toast_frame_style.add(new Object[]{R.drawable.toast_frame_style_8, R.string.style_8});
         toast_frame_style.add(new Object[]{R.drawable.toast_frame_style_9, R.string.style_9});
 
-        addItem(toast_frame_style);
-
         refreshBackground();
     }
 
