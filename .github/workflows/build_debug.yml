@@ -52,4 +52,5 @@ jobs:
         with:
           name: "Iconify v${{ env.VERSION_NAME }} Dev (#${{github.run_number}})"
           path: app/build/outputs/apk/debug/*.apk
+          retention-days: 1
           if-no-files-found: error
