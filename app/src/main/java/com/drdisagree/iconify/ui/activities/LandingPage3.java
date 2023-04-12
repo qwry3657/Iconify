@@ -93,7 +93,7 @@ public class LandingPage3 extends AppCompatActivity {
             hasErroredOut = false;
             if (RootUtil.isDeviceRooted()) {
                 if (RootUtil.isMagiskInstalled() || RootUtil.isKSUInstalled()) {
-                    
+                    if (RootUtil.isDeviceRooted()) {
                         showInfo(R.string.need_storage_perm_title, R.string.need_storage_perm_desc);
                         Toast.makeText(LandingPage3.this, R.string.toast_storage_access, Toast.LENGTH_SHORT).show();
 
