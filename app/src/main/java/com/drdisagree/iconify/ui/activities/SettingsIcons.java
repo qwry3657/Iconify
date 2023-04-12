@@ -102,32 +102,6 @@ public class SettingsIcons extends AppCompatActivity {
             }
         }
 
-        // Enable onClick event
-        for (int i = 0; i < container.getChildCount(); i++) {
-            enableOnClickListener(container.getChildAt(i).findViewById(R.id.icon_pack_child), i);
-        }
-
-        refreshBackground();
-
-
-        disable_settings_icons.setOnClickListener(v -> {
-            Prefs.clearPref(SELECTED_SETTINGS_ICONS_SET);
-            Prefs.clearPref(SELECTED_SETTINGS_ICONS_BG);
-            Prefs.clearPref(SELECTED_SETTINGS_ICONS_COLOR);
-
-            disable_settings_icons.setVisibility(View.GONE);
-
-            for (int i = 1; i <= 3; i++)
-                OverlayUtil.disableOverlay("IconifyComponentSIP" + i + ".overlay");
-        });
-    }
-
-    @Override
-    public boolean onSupportNavigateUp() {
-        onBackPressed();
-        return true;
-    }
-
     // Function to check for layout changes
     private void refreshLayout(LinearLayout layout) {
         for (int i = 0; i < container.getChildCount(); i++) {
