@@ -63,47 +63,6 @@ public class ToastFrame extends AppCompatActivity {
         refreshBackground();
     }
 
-    // Function to add new item in list
-    @SuppressLint("UseCompatLoadingForDrawables")
-    private void addItem(ArrayList<Object[]> pack) {
-        for (int i = 0; i < pack.size(); i++) {
-            View list = LayoutInflater.from(this).inflate(R.layout.view_toast_frame, container, false);
-
-            LinearLayout toast_container = list.findViewById(R.id.toast_container);
-            toast_container.setBackground(getResources().getDrawable((int) pack.get(i)[0]));
-
-            TextView style_name = list.findViewById(R.id.style_name);
-            style_name.setText(getResources().getString((int) pack.get(i)[1]));
-
-            int finalI = i;
-            list.setOnClickListener(v -> {
-                if (!Environment.isExternalStorageManager()) {
-                    SystemUtil.getStoragePermission(this);
-                } else {
-                    AtomicBoolean hasErroredOut = new AtomicBoolean(false);
-
-                    try {
-                        hasErroredOut.set(OnDemandCompiler.buildOverlay("TSTFRM", finalI + 1, FRAMEWORK_PACKAGE));
-                    } catch (IOException e) {
-                        hasErroredOut.set(true);
-                        Log.e("ToastFrame", e.toString());
-                    }
-
-                    if (!hasErroredOut.get()) {
-                        Prefs.putInt(SELECTED_TOAST_FRAME, finalI);
-                        OverlayUtil.enableOverlay("IconifyComponentTSTFRM.overlay");
-                        Toast.makeText(Iconify.getAppContext(), getResources().getString(R.string.toast_applied), Toast.LENGTH_SHORT).show();
-                    } else
-                        Toast.makeText(Iconify.getAppContext(), getResources().getString(R.string.toast_error), Toast.LENGTH_SHORT).show();
-
-                    refreshBackground();
-                }
-            });
-
-            container.addView(list);
-        }
-    }
-
     // Function to check for bg drawable changes
     @SuppressLint("SetTextI18n")
     private void refreshBackground() {
