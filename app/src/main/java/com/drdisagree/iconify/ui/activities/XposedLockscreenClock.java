@@ -114,16 +114,6 @@ public class XposedLockscreenClock extends AppCompatActivity {
         indicator.setViewPager(container);
         indicator.tintIndicator(getResources().getColor(R.color.textColorSecondary));
 
-        // Lockscreen clock font picker
-        Button pick_lsclock_font = findViewById(R.id.pick_lsclock_font);
-        pick_lsclock_font.setOnClickListener(v -> {
-            if (!Environment.isExternalStorageManager()) {
-                SystemUtil.getStoragePermission(this);
-            } else {
-                browseLSClockFont();
-            }
-        });
-
         Button disable_lsclock_font = findViewById(R.id.disable_lsclock_font);
         disable_lsclock_font.setVisibility(RPrefs.getBoolean(LSCLOCK_FONT_SWITCH, false) ? View.VISIBLE : View.GONE);
 

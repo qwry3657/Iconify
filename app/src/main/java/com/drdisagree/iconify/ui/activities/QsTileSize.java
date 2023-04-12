@@ -193,54 +193,6 @@ public class QsTileSize extends AppCompatActivity {
             }
         });
 
-        // Apply and reset button
-        Button qs_tile_height_apply = findViewById(R.id.qs_tile_height_apply);
-        Button qs_tile_height_reset = findViewById(R.id.qs_tile_height_reset);
-
-        if (Prefs.getBoolean("IconifyComponentQSTH.overlay"))
-            qs_tile_height_reset.setVisibility(View.VISIBLE);
-
-        qs_tile_height_apply.setOnClickListener(v -> {
-            if (!Environment.isExternalStorageManager()) {
-                SystemUtil.getStoragePermission(this);
-            } else {
-                // Show loading dialog
-                loadingDialog.show(getResources().getString(R.string.loading_dialog_wait));
-                AtomicBoolean hasErroredOut = new AtomicBoolean(false);
-
-                Runnable runnable = () -> {
-                    try {
-                        hasErroredOut.set(QsTileHeightManager.enableOverlay(portNonExpandedHeight[0], portExpandedHeight[0], landNonExpandedHeight[0], landExpandedHeight[0]));
-                    } catch (IOException e) {
-                        hasErroredOut.set(true);
-                    }
-
-                    runOnUiThread(() -> {
-                        if (!hasErroredOut.get()) {
-                            Prefs.putInt(PORT_QSTILE_NONEXPANDED_HEIGHT, portNonExpandedHeight[0]);
-                            Prefs.putInt(PORT_QSTILE_EXPANDED_HEIGHT, portExpandedHeight[0]);
-                            Prefs.putInt(LAND_QSTILE_NONEXPANDED_HEIGHT, landNonExpandedHeight[0]);
-                            Prefs.putInt(LAND_QSTILE_EXPANDED_HEIGHT, landExpandedHeight[0]);
-
-                            qs_tile_height_reset.setVisibility(View.VISIBLE);
-                        }
-
-                        new Handler().postDelayed(() -> {
-                            // Hide loading dialog
-                            loadingDialog.hide();
-
-                            if (hasErroredOut.get())
-                                Toast.makeText(Iconify.getAppContext(), getResources().getString(R.string.toast_error), Toast.LENGTH_SHORT).show();
-                            else
-                                Toast.makeText(Iconify.getAppContext(), getResources().getString(R.string.toast_applied), Toast.LENGTH_SHORT).show();
-                        }, 2000);
-                    });
-                };
-                Thread thread = new Thread(runnable);
-                thread.start();
-            }
-        });
-
         qs_tile_height_reset.setOnClickListener(v -> {
             Prefs.clearPref(PORT_QSTILE_NONEXPANDED_HEIGHT);
             Prefs.clearPref(PORT_QSTILE_EXPANDED_HEIGHT);
