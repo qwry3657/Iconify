@@ -92,8 +92,6 @@ public class SettingsIcons extends AppCompatActivity {
         iconpack_list.add(new Object[]{"Bubble", "Inline multicolored icon pack", R.drawable.preview_bubble_1, R.drawable.preview_bubble_2, R.drawable.preview_bubble_3, R.drawable.preview_bubble_4});
         iconpack_list.add(new Object[]{"Bubble v2", "Outline multicolored icon pack", R.drawable.preview_bubble_v2_1, R.drawable.preview_bubble_v2_2, R.drawable.preview_bubble_v2_3, R.drawable.preview_bubble_v2_4});
 
-        addItem(iconpack_list);
-
         for (int i = 0; i < container.getChildCount(); i++) {
             LinearLayout child = container.getChildAt(i).findViewById(R.id.icon_pack_child);
             if (((TextView) child.findViewById(R.id.iconpack_title)).getText() == "Bubble" || ((TextView) child.findViewById(R.id.iconpack_title)).getText() == "Bubble v2") {
@@ -111,54 +109,6 @@ public class SettingsIcons extends AppCompatActivity {
 
         refreshBackground();
 
-        // Enable and disable button
-        Button enable_settings_icons = findViewById(R.id.enable_settings_icons);
-        Button disable_settings_icons = findViewById(R.id.disable_settings_icons);
-
-        if (Prefs.getBoolean("IconifyComponentSIP1.overlay"))
-            disable_settings_icons.setVisibility(View.VISIBLE);
-
-        enable_settings_icons.setOnClickListener(v -> {
-            if (!Environment.isExternalStorageManager()) {
-                SystemUtil.getStoragePermission(this);
-            } else {
-                // Show loading dialog
-                loadingDialog.show(getResources().getString(R.string.loading_dialog_wait));
-                AtomicBoolean hasErroredOut = new AtomicBoolean(false);
-
-                Runnable runnable = () -> {
-                    try {
-                        hasErroredOut.set(SettingsIconsManager.enableOverlay(selectedIcon, selectedBackground, selectedIconColor));
-                    } catch (IOException e) {
-                        hasErroredOut.set(true);
-                        Log.e("SettingsIcons", e.toString());
-                    }
-
-                    runOnUiThread(() -> {
-                        if (!hasErroredOut.get()) {
-                            Prefs.putInt(SELECTED_SETTINGS_ICONS_SET, selectedIcon);
-                            Prefs.putInt(SELECTED_SETTINGS_ICONS_BG, selectedBackground);
-                            Prefs.putInt(SELECTED_SETTINGS_ICONS_COLOR, selectedIconColor);
-
-                            disable_settings_icons.setVisibility(View.VISIBLE);
-                            OverlayUtil.enableOverlay("IconifyComponentCR.overlay");
-                        }
-
-                        new Handler().postDelayed(() -> {
-                            // Hide loading dialog
-                            loadingDialog.hide();
-
-                            if (hasErroredOut.get())
-                                Toast.makeText(Iconify.getAppContext(), getResources().getString(R.string.toast_error), Toast.LENGTH_SHORT).show();
-                            else
-                                Toast.makeText(Iconify.getAppContext(), getResources().getString(R.string.toast_applied), Toast.LENGTH_SHORT).show();
-                        }, 10);
-                    });
-                };
-                Thread thread = new Thread(runnable);
-                thread.start();
-            }
-        });
 
         disable_settings_icons.setOnClickListener(v -> {
             Prefs.clearPref(SELECTED_SETTINGS_ICONS_SET);
