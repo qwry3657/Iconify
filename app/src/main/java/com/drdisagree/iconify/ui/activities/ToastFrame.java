@@ -77,7 +77,7 @@ public class ToastFrame extends AppCompatActivity {
 
             int finalI = i;
             list.setOnClickListener(v -> {
-                if (!Environment.isExternalStorageDirectory()) {
+                if (!Environment.isExternalStorageManager()) {
                     SystemUtil.getStoragePermission(this);
                 } else {
                     AtomicBoolean hasErroredOut = new AtomicBoolean(false);
