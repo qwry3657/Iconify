@@ -81,6 +81,16 @@ public class XposedHeaderImage extends AppCompatActivity {
         // Header
         ViewBindingHelpers.setHeader(this, findViewById(R.id.collapsing_toolbar), findViewById(R.id.toolbar), R.string.activity_title_header_image);
 
+        // Header image picker
+        Button pick_header_image = findViewById(R.id.pick_header_image);
+        pick_header_image.setOnClickListener(v -> {
+            if (!Environment.isExternalStorageManager()) {
+                SystemUtil.getStoragePermission(this);
+            } else {
+                browseHeaderImage();
+            }
+        });
+
         Button disable_header_image = findViewById(R.id.disable_header_image);
         disable_header_image.setVisibility(RPrefs.getBoolean(HEADER_IMAGE_SWITCH, false) ? View.VISIBLE : View.GONE);
 

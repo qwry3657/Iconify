@@ -118,6 +118,49 @@ public class ProgressBarAdapter extends RecyclerView.Adapter<ProgressBarAdapter.
             }
         });
 
+        // Set onClick operation for Enable button
+        holder.btn_enable.setOnClickListener(v -> {
+            if (!Environment.isExternalStorageManager()) {
+                SystemUtil.getStoragePermission(context);
+            } else {
+                // Show loading dialog
+                loadingDialog.show(context.getResources().getString(R.string.loading_dialog_wait));
+
+                Runnable runnable = () -> {
+                    AtomicBoolean hasErroredOut = new AtomicBoolean(false);
+                    Prefs.putInt(SELECTED_PROGRESSBAR, holder.getBindingAdapterPosition());
+
+                    try {
+                        hasErroredOut.set(OnDemandCompiler.buildOverlay("PGB", holder.getBindingAdapterPosition() + 1, FRAMEWORK_PACKAGE));
+                    } catch (IOException e) {
+                        hasErroredOut.set(true);
+                        Log.e("ProgressBar", e.toString());
+                    }
+
+                    ((Activity) context).runOnUiThread(() -> {
+                        new Handler().postDelayed(() -> {
+                            // Hide loading dialog
+                            loadingDialog.hide();
+
+                            if (!hasErroredOut.get()) {
+                                // Change button visibility
+                                holder.btn_enable.setVisibility(View.GONE);
+                                holder.btn_disable.setVisibility(View.VISIBLE);
+                                refreshBackground(holder);
+
+                                Toast.makeText(Iconify.getAppContext(), context.getResources().getString(R.string.toast_applied), Toast.LENGTH_SHORT).show();
+                            } else {
+                                Prefs.putInt(SELECTED_PROGRESSBAR, -1);
+                                Toast.makeText(Iconify.getAppContext(), context.getResources().getString(R.string.toast_error), Toast.LENGTH_SHORT).show();
+                            }
+                        }, 1000);
+                    });
+                };
+                Thread thread = new Thread(runnable);
+                thread.start();
+            }
+        });
+
         // Set onClick operation for Disable button
         holder.btn_disable.setOnClickListener(v -> {
             // Show loading dialog

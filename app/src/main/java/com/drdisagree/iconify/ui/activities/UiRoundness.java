@@ -100,6 +100,46 @@ public class UiRoundness extends AppCompatActivity {
             }
         });
 
+        Button apply_radius = findViewById(R.id.apply_radius);
+        apply_radius.setOnClickListener(v -> {
+            if (!Environment.isExternalStorageManager()) {
+                SystemUtil.getStoragePermission(this);
+            } else {
+                // Show loading dialog
+                loadingDialog.show(getResources().getString(R.string.loading_dialog_wait));
+                AtomicBoolean hasErroredOut = new AtomicBoolean(false);
+
+                Runnable runnable = () -> {
+                    try {
+                        hasErroredOut.set(RoundnessManager.enableOverlay(finalUiCornerRadius[0]));
+                    } catch (IOException e) {
+                        hasErroredOut.set(true);
+                        Log.e("UiRoundness", e.toString());
+                    }
+
+                    runOnUiThread(() -> {
+                        if (!hasErroredOut.get()) {
+                            Prefs.putString(UI_CORNER_RADIUS, String.valueOf(finalUiCornerRadius[0]));
+
+                            RPrefs.putInt(UI_CORNER_RADIUS, finalUiCornerRadius[0]);
+                        }
+
+                        new Handler().postDelayed(() -> {
+                            // Hide loading dialog
+                            loadingDialog.hide();
+
+                            if (hasErroredOut.get())
+                                Toast.makeText(Iconify.getAppContext(), getResources().getString(R.string.toast_error), Toast.LENGTH_SHORT).show();
+                            else
+                                Toast.makeText(Iconify.getAppContext(), getResources().getString(R.string.toast_applied), Toast.LENGTH_SHORT).show();
+                        }, 2000);
+                    });
+                };
+                Thread thread = new Thread(runnable);
+                thread.start();
+            }
+        });
+
         // Change orientation in landscape / portrait mode
         int orientation = this.getResources().getConfiguration().orientation;
         LinearLayout qs_tile_orientation = findViewById(R.id.qs_tile_orientation);

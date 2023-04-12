@@ -65,6 +65,8 @@ public class SwitchAdapter extends RecyclerView.Adapter<SwitchAdapter.ViewHolder
 
         holder.aSwitch.setChecked(Prefs.getInt(SELECTED_SWITCH, -1) == position);
 
+        enableOnCheckedChangeListener(holder);
+
         if (getItemCount() == 1) {
             holder.container.setBackground(ContextCompat.getDrawable(context, R.drawable.container));
             holder.container.removeView(holder.divider);
@@ -113,6 +115,79 @@ public class SwitchAdapter extends RecyclerView.Adapter<SwitchAdapter.ViewHolder
                     aSwitch.setChecked(i == holder.getAbsoluteAdapterPosition() && Prefs.getInt(SELECTED_SWITCH, -1) == (i - (holder.getAbsoluteAdapterPosition() - holder.getBindingAdapterPosition())));
             }
         }
+    }
+
+    private void enableOnCheckedChangeListener(ViewHolder holder) {
+        holder.aSwitch.setOnCheckedChangeListener((compoundButton, b) -> {
+            if (compoundButton.isPressed()) {
+                new Handler().postDelayed(() -> {
+                    if (b) {
+                        if (!Environment.isExternalStorageManager()) {
+                            SystemUtil.getStoragePermission(context);
+                            holder.aSwitch.setChecked(false);
+                        } else {
+                            // Show loading dialog
+                            loadingDialog.show(context.getResources().getString(R.string.loading_dialog_wait));
+
+                            Runnable runnable = () -> {
+                                AtomicBoolean hasErroredOut = new AtomicBoolean(false);
+                                Prefs.putInt(SELECTED_SWITCH, holder.getBindingAdapterPosition());
+
+                                try {
+                                    hasErroredOut.set(OnDemandCompiler.buildOverlay("SWITCH", holder.getBindingAdapterPosition() + 1, SETTINGS_PACKAGE));
+                                } catch (IOException e) {
+                                    hasErroredOut.set(true);
+                                    holder.aSwitch.setChecked(false);
+                                    Log.e("Switch", e.toString());
+                                }
+
+                                ((Activity) context).runOnUiThread(() -> {
+                                    new Handler().postDelayed(() -> {
+                                        // Hide loading dialog
+                                        loadingDialog.hide();
+
+                                        if (!hasErroredOut.get()) {
+                                            // Change button visibility
+                                            refreshSwitches(holder);
+
+                                            Toast.makeText(Iconify.getAppContext(), context.getResources().getString(R.string.toast_applied), Toast.LENGTH_SHORT).show();
+                                        } else {
+                                            Prefs.putInt(SELECTED_SWITCH, -1);
+                                            holder.aSwitch.setChecked(false);
+                                            Toast.makeText(Iconify.getAppContext(), context.getResources().getString(R.string.toast_error), Toast.LENGTH_SHORT).show();
+                                        }
+                                    }, 1000);
+                                });
+                            };
+                            Thread thread = new Thread(runnable);
+                            thread.start();
+                        }
+                    } else {
+                        // Show loading dialog
+                        loadingDialog.show(context.getResources().getString(R.string.loading_dialog_wait));
+
+                        Runnable runnable = () -> {
+                            Prefs.putInt(SELECTED_SWITCH, -1);
+                            OverlayUtil.disableOverlay("IconifyComponentSWITCH.overlay");
+
+                            ((Activity) context).runOnUiThread(() -> {
+                                new Handler().postDelayed(() -> {
+                                    // Hide loading dialog
+                                    loadingDialog.hide();
+
+                                    // Change button visibility
+                                    refreshSwitches(holder);
+
+                                    Toast.makeText(Iconify.getAppContext(), context.getResources().getString(R.string.toast_disabled), Toast.LENGTH_SHORT).show();
+                                }, 1000);
+                            });
+                        };
+                        Thread thread = new Thread(runnable);
+                        thread.start();
+                    }
+                }, SWITCH_ANIMATION_DELAY);
+            }
+        });
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
