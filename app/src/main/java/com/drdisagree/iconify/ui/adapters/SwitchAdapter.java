@@ -65,8 +65,6 @@ public class SwitchAdapter extends RecyclerView.Adapter<SwitchAdapter.ViewHolder
 
         holder.aSwitch.setChecked(Prefs.getInt(SELECTED_SWITCH, -1) == position);
 
-        enableOnCheckedChangeListener(holder);
-
         if (getItemCount() == 1) {
             holder.container.setBackground(ContextCompat.getDrawable(context, R.drawable.container));
             holder.container.removeView(holder.divider);
