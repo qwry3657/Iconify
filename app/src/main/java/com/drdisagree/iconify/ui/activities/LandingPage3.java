@@ -133,8 +133,8 @@ public class LandingPage3 extends AppCompatActivity {
                             });
                         } else {
                             Intent intent = new Intent(LandingPage3.this, HomePage.class);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                            startActivity(intent);
+                                startActivity(intent);
+                                finish();
                         }
                     }
                 } else {
